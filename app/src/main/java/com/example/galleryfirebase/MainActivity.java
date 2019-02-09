@@ -1,5 +1,6 @@
 package com.example.galleryfirebase;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +13,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,11 +56,13 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference userImagesRef;
     private FloatingActionButton fab;
     private RecyclerView mRec;
-    List<Image> images;
+    private List<Image> images;
     private ImageAdapter adapter;
     private String link;
     private String path;
-
+    private Dialog settingsDialog;
+    private ImageView dialogImage;
+    private Button dialogButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
         fab=findViewById(R.id.fab);
         mRec=findViewById(R.id.recycler);
         images = new ArrayList<>();
+        settingsDialog=new Dialog(this);
+        settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        settingsDialog.setContentView(getLayoutInflater().inflate(R.layout.dialog
+                , null));
+
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +105,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(int index) {
                 Image image = images.get(index);
-                download(image.getImagePath());
+
+
+               // Picasso.with(getApplicationContext()).load(image.getImageLink()).into(dialogImage);
+
+               download(image.getImagePath());
             }
         });
 
@@ -141,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     private void download(String imagePath) {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
-
+        progressDialog.setTitle("downloading your picture");
         progressDialog.setMessage("Downloading...");
         progressDialog.show();
         String localFileName = UUID.randomUUID().toString() + ".jpg";
